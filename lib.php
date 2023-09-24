@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-24 07:47 AM
+// Updated: 2023-09-24 07:49 AM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -96,12 +96,11 @@ function arg_opts(
             );
 
             $pindex = ltrim($pairs[0], '-');
-            $value = $process[$pindex];
 
             arg_opts_auto_array(
                 $same_params_become_array,
                 $parameters[$pindex],
-                $value
+                $process[$pindex];
             );
 
             continue;
@@ -119,12 +118,10 @@ function arg_opts(
         // If the next argument is also an option, we'll set
         // the current argument to null|true and move on.
         if ($next_arg != '' && $next_arg[0] == '-') {
-            $value = $empty_params_become_true ? 1 : null;
-
             arg_opts_auto_array(
                 $same_params_become_array,
                 $parameters[$pindex],
-                $value
+                $empty_params_become_true ? 1 : null
             );
 
             continue;
@@ -133,12 +130,10 @@ function arg_opts(
         // If no value is given, set the current argument to
         // be null|true and move on.
         if ($next_arg == '') {
-            $value = $empty_params_become_true ? 1 : null;
-
             arg_opts_auto_array(
                 $same_params_become_array,
                 $parameters[$pindex],
-                $value
+                $empty_params_become_true ? 1 : null
             );
 
             continue;
