@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-24 07:43 AM
+// Updated: 2023-09-24 07:47 AM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -98,23 +98,11 @@ function arg_opts(
             $pindex = ltrim($pairs[0], '-');
             $value = $process[$pindex];
 
-            if ($same_params_become_array) {
-                if (!isset($parameters[$pindex])) {
-                    $parameters[$pindex] = $value;
-                } else {
-                    if (is_string($parameters[$pindex])) {
-                        $parameters[$pindex] = [$parameters[$pindex], $value];
-                    } else {
-                        if (!is_array($parameters[$pindex])) {
-                            $parameters[$pindex] = [];
-                        }
-
-                        $parameters[$pindex][] = $value;
-                    }
-                }
-            } else {
-                $parameters[$pindex] = $value;
-            }
+            arg_opts_auto_array(
+                $same_params_become_array,
+                $parameters[$pindex],
+                $value
+            );
 
             continue;
         }
