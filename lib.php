@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-24 07:49 AM
+// Updated: 2023-09-24 07:51 AM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -100,7 +100,7 @@ function arg_opts(
             arg_opts_auto_array(
                 $same_params_become_array,
                 $parameters[$pindex],
-                $process[$pindex];
+                $process[$pindex]
             );
 
             continue;
