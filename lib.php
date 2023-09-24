@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-20 03:00 AM
+// Updated: 2023-09-24 07:43 AM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -22,11 +22,16 @@
 // if $signify_end is true, we stop parsing parameters
 // after we've reached '--' in the argument list, after
 // which we return as usual without the extra data.
+//
+// if $same_params_become_array is true, we turn each
+// reoccuring parameter into an array of multiple
+// values given to that parameter.
 function arg_opts(
     $arguments,
     $empty_params_become_true = true,
     $get_non_opts = false,
-    $signify_end = false
+    $signify_end = false,
+    $same_params_become_array = false
 ) {
     // Return an empty array if an empty array of arguments was given
     if (!is_array($arguments) || !sizeof($arguments)) {
@@ -82,9 +87,35 @@ function arg_opts(
             $pairs = explode('=', $value);
             // NOTE: We don't pass $get_non_opts and $signify_end
             // as that will require more logic.
-            $process = arg_opts($pairs, $empty_params_become_true, false, false);
+            $process = arg_opts(
+                $pairs,
+                $empty_params_become_true,
+                false,
+                false,
+                $same_params_become_array
+            );
+
             $pindex = ltrim($pairs[0], '-');
-            $parameters[$pindex] = $process[$pindex];
+            $value = $process[$pindex];
+
+            if ($same_params_become_array) {
+                if (!isset($parameters[$pindex])) {
+                    $parameters[$pindex] = $value;
+                } else {
+                    if (is_string($parameters[$pindex])) {
+                        $parameters[$pindex] = [$parameters[$pindex], $value];
+                    } else {
+                        if (!is_array($parameters[$pindex])) {
+                            $parameters[$pindex] = [];
+                        }
+
+                        $parameters[$pindex][] = $value;
+                    }
+                }
+            } else {
+                $parameters[$pindex] = $value;
+            }
+
             continue;
         }
 
@@ -100,20 +131,39 @@ function arg_opts(
         // If the next argument is also an option, we'll set
         // the current argument to null|true and move on.
         if ($next_arg != '' && $next_arg[0] == '-') {
-            $parameters[$pindex] = $empty_params_become_true ? 1 : null;
+            $value = $empty_params_become_true ? 1 : null;
+
+            arg_opts_auto_array(
+                $same_params_become_array,
+                $parameters[$pindex],
+                $value
+            );
+
             continue;
         }
 
         // If no value is given, set the current argument to
         // be null|true and move on.
         if ($next_arg == '') {
-            $parameters[$pindex] = $empty_params_become_true ? 1 : null;
+            $value = $empty_params_become_true ? 1 : null;
+
+            arg_opts_auto_array(
+                $same_params_become_array,
+                $parameters[$pindex],
+                $value
+            );
+
             continue;
         }
 
         // Set the current argument to the next argument value
         // and skip checking the next argument for parameters
-        $parameters[$pindex] = $next_arg;
+        arg_opts_auto_array(
+            $same_params_become_array,
+            $parameters[$pindex],
+            $next_arg
+        );
+
         $skip_next = true;
     }
 
@@ -129,4 +179,30 @@ function arg_opts(
         );
 
     return $parameters;
+}
+
+// automatically converts a string value
+// to an array depending on its state.
+function arg_opts_auto_array(
+    $become_array,
+    &$parameter_index,
+    $value
+) {
+    if ($become_array) {
+        if (!isset($parameter_index)) {
+            $parameter_index = $value;
+        } else {
+            if (is_string($parameter_index)) {
+                $parameter_index = [$parameter_index, $value];
+            } else {
+                if (!is_array($parameter_index)) {
+                    $parameter_index = [];
+                }
+
+                $parameter_index[] = $value;
+            }
+        }
+    } else {
+        $parameter_index = $value;
+    }
 }

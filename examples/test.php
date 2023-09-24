@@ -5,7 +5,7 @@
 // This is test script for arg_opts()
 //
 // Created: 2023-09-20 12:28 AM
-// Updated: 2023-09-20 12:31 AM
+// Updated: 2023-09-24 07:45 AM
 
 // Run the 'test' scripts to see the library in action.
 // You can also run 'php args.php' with your arguments
@@ -45,11 +45,20 @@ $get_non_opts = 0;
 // Possible values: 0, 1
 $signify_end = 0;
 
+// When true all reoccuring arguments that match the
+// same name will be turned into an array containing
+// all of those values.
+//
+// Default value: 0
+// Possible values: 0, 1
+$same_params_become_array = 0;
+
 $parameters = arg_opts(
     $argv,
     $empty_params_become_true,
     $get_non_opts,
-    $signify_end
+    $signify_end,
+    $same_params_become_array
 );
 
 print_r($parameters);
