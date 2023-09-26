@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-24 07:51 AM
+// Updated: 2023-09-26 04:51 PM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -13,7 +13,7 @@
 // if $empty_params_become_true is true, all parameters
 // without a value will automatically be assigned true.
 //
-// if $get_non_opts is 1|true, we return an array of
+// if $get_non_opts is true, we return an array of
 // options not matching the required criteria, else if
 // it is 2, we return an array of parameters and also
 // options not matching the required criteria with the
@@ -26,12 +26,30 @@
 // if $same_params_become_array is true, we turn each
 // reoccuring parameter into an array of multiple
 // values given to that parameter.
+//
+// if $keep_arguments_as_is is true, we don't strip any
+// dashes from the argument name.  This in turn allows
+// for more control of what gets interpreted, with this
+// option being false, it's possible to interpret this
+// --------myArgument into 'myArgument' which may cause
+// confusion.
+//
+// if $arguments_to_lowercase is true, all argument
+// names are converted to lowercase so it is easier for
+// the rest of your code to match specific parameters
+// without having to call strtolower() on the arg_opts()
+// results.  Parameter like '--loadLibraryAt 1234' will
+// return ['loadlibraryat' => '1234'], if the option
+// $keep_arguments_as_is is true, it will return
+// ['--loadlibraryat' => '1234'].
 function arg_opts(
     $arguments,
     $empty_params_become_true = true,
     $get_non_opts = false,
     $signify_end = false,
-    $same_params_become_array = false
+    $same_params_become_array = false,
+    $keep_arguments_as_is = false,
+    $arguments_to_lowercase = false
 ) {
     // Return an empty array if an empty array of arguments was given
     if (!is_array($arguments) || !sizeof($arguments)) {
@@ -92,10 +110,18 @@ function arg_opts(
                 $empty_params_become_true,
                 false,
                 false,
-                $same_params_become_array
+                $same_params_become_array,
+                $keep_arguments_as_is,
+                $arguments_to_lowercase
             );
 
-            $pindex = ltrim($pairs[0], '-');
+            $pindex = $pairs[0];
+
+            if (!$keep_arguments_as_is)
+                $pindex = ltrim($pairs[0], '-');
+
+            if ($arguments_to_lowercase)
+                $pindex = strtolower($pindex);
 
             arg_opts_auto_array(
                 $same_params_become_array,
@@ -106,7 +132,13 @@ function arg_opts(
             continue;
         }
 
-        $pindex = ltrim($value, '-');
+        $pindex = $value;
+
+        if (!$keep_arguments_as_is)
+            $pindex = ltrim($value, '-');
+
+        if ($arguments_to_lowercase)
+            $pindex = strtolower($pindex);
 
         // NOTE: If we pass '--' while $signify_end is false, this
         // will result in a parameter that has no name (empty),
