@@ -5,7 +5,7 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-26 04:51 PM
+// Updated: 2023-09-28 11:52 AM
 
 // returns an array with argument name
 // indexes and argument specific values
@@ -52,9 +52,8 @@ function arg_opts(
     $arguments_to_lowercase = false
 ) {
     // Return an empty array if an empty array of arguments was given
-    if (!is_array($arguments) || !sizeof($arguments)) {
+    if (!is_array($arguments) || !sizeof($arguments))
         return array();
-    }
 
     $parameters = array();
     $opposite = array();
@@ -206,18 +205,20 @@ function arg_opts_auto_array(
     if ($become_array) {
         if (!isset($parameter_index)) {
             $parameter_index = $value;
-        } else {
-            if (is_string($parameter_index)) {
-                $parameter_index = [$parameter_index, $value];
-            } else {
-                if (!is_array($parameter_index)) {
-                    $parameter_index = [];
-                }
-
-                $parameter_index[] = $value;
-            }
+            return;
         }
-    } else {
-        $parameter_index = $value;
+
+        if (is_string($parameter_index)) {
+            $parameter_index = [$parameter_index, $value];
+            return;
+        }
+
+        if (!is_array($parameter_index))
+            $parameter_index = [];
+
+        $parameter_index[] = $value;
+        return;
     }
+
+    $parameter_index = $value;
 }
