@@ -5,7 +5,7 @@
 // This is test script for arg_opts()
 //
 // Created: 2023-09-20 12:28 AM
-// Updated: 2023-09-26 04:51 PM
+// Updated: 2023-09-28 11:55 AM
 
 // Run the 'test' scripts to see the library in action.
 // You can also run 'php args.php' with your arguments
@@ -16,6 +16,9 @@ require "../lib.php";
 
 // Function flags
 // ==============
+
+// This variable must point to $argv, or a similar array.
+$arguments = $argv;
 
 // When a parameter with no assigned value is encountered,
 // it's value defaults to 1 if $empty_params_become_true
@@ -69,7 +72,7 @@ $arguments_to_lowercase = 0;
 
 // --------------------
 $parameters = arg_opts(
-    $argv,
+    $arguments,
     $empty_params_become_true,
     $get_non_opts,
     $signify_end,
