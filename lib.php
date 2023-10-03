@@ -5,42 +5,35 @@
 // Arguments Parameter Parser
 //
 // Created: 2023-09-20 12:30 AM
-// Updated: 2023-09-28 11:52 AM
+// Updated: 2023-10-03 12:33 PM
 
-// returns an array with argument name
-// indexes and argument specific values
+// returns an array with argument name indexes and argument specific values
 //
-// if $empty_params_become_true is true, all parameters
-// without a value will automatically be assigned true.
+// if $empty_params_become_true is true, all parameters without a value will
+// automatically be assigned true.
 //
-// if $get_non_opts is true, we return an array of
-// options not matching the required criteria, else if
-// it is 2, we return an array of parameters and also
-// options not matching the required criteria with the
-// respective indexes: parameters, opposite
+// if $get_non_opts is true, we return an array of options not matching the
+// required criteria, else if it is 2, we return an array of parameters and also
+// options not matching the required criteria with the respective indexes:
+// parameters, opposite
 //
-// if $signify_end is true, we stop parsing parameters
-// after we've reached '--' in the argument list, after
-// which we return as usual without the extra data.
+// if $signify_end is true, we stop parsing parameters after we've reached '--'
+// in the argument list, after which we return as usual without the extra data.
 //
-// if $same_params_become_array is true, we turn each
-// reoccuring parameter into an array of multiple
-// values given to that parameter.
+// if $same_params_become_array is true, we turn each reoccuring parameter into
+// an array of multiple values given to that parameter.
 //
-// if $keep_arguments_as_is is true, we don't strip any
-// dashes from the argument name.  This in turn allows
-// for more control of what gets interpreted, with this
-// option being false, it's possible to interpret this
-// --------myArgument into 'myArgument' which may cause
-// confusion.
+// if $keep_arguments_as_is is true, we don't strip any dashes from the argument
+// name.  This in turn allows for more control of what gets interpreted, with
+// this option being false, it's possible to interpret this --------myArgument
+// into 'myArgument' which may cause confusion.
 //
-// if $arguments_to_lowercase is true, all argument
-// names are converted to lowercase so it is easier for
-// the rest of your code to match specific parameters
-// without having to call strtolower() on the arg_opts()
-// results.  Parameter like '--loadLibraryAt 1234' will
-// return ['loadlibraryat' => '1234'], if the option
-// $keep_arguments_as_is is true, it will return
+// if $arguments_to_lowercase is true, all argument  names are converted to
+// lowercase so it is easier for the rest of your code to match specific
+// parameters without having to call strtolower() on the arg_opts() results.
+// Parameter like '--loadLibraryAt 1234' will return ['loadlibraryat' => '1234']
+//
+// if the option $keep_arguments_as_is is true, it will return
 // ['--loadlibraryat' => '1234'].
 function arg_opts(
     $arguments,
@@ -89,10 +82,9 @@ function arg_opts(
         $has_equals = strpos($value, '=') !== false;
         $has_space  = strpos($value, ' ') !== false;
 
-        // If this is an argument that begins with '-'
-        // but has whitespace ' ', we won't treat it
-        // as a parameter because parameters must not
-        // contain whitespaces in their names.
+        // If this is an argument that begins with '-' but has whitespace ' ',
+        // we won't treat it as a parameter because parameters must not contain
+        // whitespaces in their names.
         if ($has_space && !$has_equals) {
             if ($get_non_opts)
                 $opposite[] = $value;
@@ -102,8 +94,8 @@ function arg_opts(
         // Handle parameter=value
         if ($has_equals) {
             $pairs = explode('=', $value);
-            // NOTE: We don't pass $get_non_opts and $signify_end
-            // as that will require more logic.
+            // NOTE: We don't pass $get_non_opts and $signify_end as that will
+            // require more logic.
             $process = arg_opts(
                 $pairs,
                 $empty_params_become_true,
@@ -139,15 +131,14 @@ function arg_opts(
         if ($arguments_to_lowercase)
             $pindex = strtolower($pindex);
 
-        // NOTE: If we pass '--' while $signify_end is false, this
-        // will result in a parameter that has no name (empty),
-        // and this result will be written to the list, we don't
-        // want that.
+        // NOTE: If we pass '--' while $signify_end is false, this will result
+        // in a parameter that has no name (empty), and this result will be
+        // written to the list, we don't want that.
         if ($pindex == '')
             continue;
 
-        // If the next argument is also an option, we'll set
-        // the current argument to null|true and move on.
+        // If the next argument is also an option, we'll set the current
+        // argument to null|true and move on.
         if ($next_arg != '' && $next_arg[0] == '-') {
             arg_opts_auto_array(
                 $same_params_become_array,
@@ -158,8 +149,8 @@ function arg_opts(
             continue;
         }
 
-        // If no value is given, set the current argument to
-        // be null|true and move on.
+        // If no value is given, set the current argument to be null|true and
+        // move on.
         if ($next_arg == '') {
             arg_opts_auto_array(
                 $same_params_become_array,
@@ -170,8 +161,8 @@ function arg_opts(
             continue;
         }
 
-        // Set the current argument to the next argument value
-        // and skip checking the next argument for parameters
+        // Set the current argument to the next argument value and skip checking
+        // the next argument for parameters
         arg_opts_auto_array(
             $same_params_become_array,
             $parameters[$pindex],
@@ -195,8 +186,7 @@ function arg_opts(
     return $parameters;
 }
 
-// automatically converts a string value
-// to an array depending on its state.
+// automatically converts a string value to an array depending on its state.
 function arg_opts_auto_array(
     $become_array,
     &$parameter_index,
